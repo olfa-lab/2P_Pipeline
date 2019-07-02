@@ -36,7 +36,7 @@ tif=${{tifs[$SLURM_ARRAY_TASK_ID]}}
 
 {{
     echo $tif
-    matlab -nodisplay -r "{matlab_script}('$tif','Ref.tif'); exit"
+    matlab -nodisplay -r "{matlab_script}('$tif','{refName}'); exit"
 }} > $tif.log 2>&1
 
 exit
@@ -140,6 +140,11 @@ if __name__ == "__main__":
         # Default will include all TIFF
         default="*.tif",
         help="File name pattern to select tifs, i.e. Run0034_00*.tif.",
+    )
+    parser.add_argument(
+        "--refName",
+        default="Ref.tif",
+        help="File name of reference tif to be used by motion correction script.",
     )
     try:
         parser.add_argument(
