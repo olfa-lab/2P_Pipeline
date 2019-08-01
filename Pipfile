@@ -16,7 +16,7 @@ tables = "*"
 h5py = "*"
 numpy = "*"
 scikit-image = "*"
-pandas = "*"
+pandas = "<=0.24.2"
 tqdm = "*"
 seaborn = "*"
 
