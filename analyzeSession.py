@@ -362,18 +362,20 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     logger.debug(args)
-    if hasattr(args, "cluster") and args.cluster:
-        run_on_cluster(sys.argv, args.cluster)
-    else:
-        try:
-            if args.includeEmpty:
-                ImagingSession.IGNORE_ODORS.remove("empty")
-        except ValueError as er:
-            logger.debug(
-                f"Remove failed: 'empty' not in ImagingSession.IGNORE_ODORS.\n {er}"
-            )
-        ImagingSession.preWindowSize = args.preWindow
-        ImagingSession.postWindowSize = args.postWindow
+    # If we get no subcommand, none of the commonParser args are present, so check
+    if hasattr(args, "cluster"):
+        if args.cluster:
+            run_on_cluster(sys.argv, args.cluster)
+        else:
+            try:
+                if args.includeEmpty:
+                    ImagingSession.IGNORE_ODORS.remove("empty")
+            except ValueError as er:
+                logger.debug(
+                    f"Remove failed: 'empty' not in ImagingSession.IGNORE_ODORS.\n {er}"
+                )
+            ImagingSession.preWindowSize = args.preWindow
+            ImagingSession.postWindowSize = args.postWindow
 
-        args.func(**vars(args))
+            args.func(**vars(args))
     logger.info(f"Total run time: {time.time() - startTime:.2f} sec")
