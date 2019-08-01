@@ -1,0 +1,24 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[pipenv]
+allow_prereleases = true
+
+[dev-packages]
+black = "==19.3b0"
+flake8 = "*"
+jupyterlab = "*"
+
+[packages]
+tables = "*"
+h5py = "*"
+numpy = "*"
+scikit-image = "*"
+pandas = "*"
+tqdm = "*"
+seaborn = "*"
+
+[requires]
+python_version = "3.7"
