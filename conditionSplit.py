@@ -76,7 +76,7 @@ def split_by_odor_combos(stack: TiffStack, session: ImagingSession) -> None:
         comboFrameIndexes: List[int] = []
         for startFrame, endFrame in zip(trialStartFrames, trialEndFrames):
             comboFrameIndexes += list(range(startFrame, endFrame))
-        saveFilename = f"{stack.filenamePrefix}_Odors:{'_'.join(combo)}.tif"
+        saveFilename = f"{stack.filenamePrefix}-Odors_{'_'.join(combo)}.tif"
         logger.info(
             f"Saving combo tif sized {stack.timeseries[comboFrameIndexes].shape} "
             + f"to {saveFilename}"
@@ -84,6 +84,7 @@ def split_by_odor_combos(stack: TiffStack, session: ImagingSession) -> None:
         io.imsave(
             saveFilename, stack.timeseries[comboFrameIndexes], check_contrast=False
         )
+    logging.info(f"Odor codes: {session.odorCodesToNames}")
 
 
 # Quick and dirty way to use: run from command line with first argument the H5 and the
