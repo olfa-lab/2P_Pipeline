@@ -45,6 +45,7 @@ class ImagingSession:
     """
 
     IGNORE_ODORS: List[str] = ["None", "empty"]
+    ODOR_CODES = [c for c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"]
     preWindowSize: int = 500
     postWindowSize: int = 1500
 
@@ -124,6 +125,20 @@ class ImagingSession:
             for stimulus in stimuli
         ]
         return ",".join(conditions)
+
+    @classmethod
+    def odors_in_condition(cls, condition: str) -> List[str]:
+        """Pull out odor codes from condition text.
+
+        Assumes the text is standardized according to standardize_condition_text.
+
+        Args:
+            condition (str): Condition text.
+
+        Returns:
+            List[str]: List of the odor codes.
+        """
+        return list(filter(lambda c: c in cls.ODOR_CODES, condition))
 
     def _set_timestamps(self, timelocks: pd.DataFrame) -> None:
         self.preTrialTimestamps: Dict[str, Sequence[float]] = {}
