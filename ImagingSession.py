@@ -20,6 +20,8 @@ class ImagingSession:
             (default: {False})
 
     Attributes:
+        conditions {List[str]} -- The conditions used in this session.
+        trialGroups {Dict[str, List[int]]} -- Mapping from condition to trials.
         preWindowSize {int} -- Size of pre-timelock averaging window in milliseconds.
             (default: {500})
         postWindowSize {int} -- Size of post-timelock averaging window in milliseconds.
@@ -43,6 +45,7 @@ class ImagingSession:
     """
 
     IGNORE_ODORS: List[str] = ["None", "empty"]
+    ODOR_CODES = [c for c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"]
     preWindowSize: int = 500
     postWindowSize: int = 1500
 
@@ -62,14 +65,16 @@ class ImagingSession:
         self.postWindowSize = (
             self.postWindowSize if postWindowSize is None else postWindowSize
         )
+        self.frameTimestamps = frameTimestamps
+        self.h5Filename: str = h5Filename
         self.title = title
 
-        sessionData = processROI.get_trials_metadata(h5Filename)
+        self._sessionData = processROI.get_trials_metadata(h5Filename)
         odorCodeGenerator = iter("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
         self.odorCodesToNames: Dict[str, str] = {}
         self.odorNamesToCodes: Dict[str, str] = {}
         trialGroups: Dict[str, List[int]] = {}
-        for i_trial, trial in sessionData.iterrows():
+        for i_trial, trial in self._sessionData.iterrows():
             stimuli = []
             odors = [trial["olfas:olfa_0:odor"], trial["olfas:olfa_1:odor"]]
             for i_odor, odor in enumerate(odors):
@@ -94,6 +99,10 @@ class ImagingSession:
         self._set_timestamps(trialAlignmentTimes)
         self._set_frameWindows(frameTimestamps)
 
+    @property
+    def conditions(self):
+        return list(self.trialGroups.keys())
+
     @staticmethod
     def standardize_condition_text(stimuli: Sequence[Tuple[float, str]]) -> str:
         """Produce consistent condition text from odor name and flow rates.
@@ -116,6 +125,20 @@ class ImagingSession:
             for stimulus in stimuli
         ]
         return ",".join(conditions)
+
+    @classmethod
+    def odors_in_condition(cls, condition: str) -> List[str]:
+        """Pull out odor codes from condition text.
+
+        Assumes the text is standardized according to standardize_condition_text.
+
+        Args:
+            condition (str): Condition text.
+
+        Returns:
+            List[str]: List of the odor codes.
+        """
+        return list(filter(lambda c: c in cls.ODOR_CODES, condition))
 
     def _set_timestamps(self, timelocks: pd.DataFrame) -> None:
         self.preTrialTimestamps: Dict[str, Sequence[float]] = {}
