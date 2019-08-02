@@ -28,11 +28,13 @@ class TiffStack:
             maskFilenames (Sequence[str], optional): Sequence of bmp files for boolean
                 masks. Defaults to [].
 
-        Sets:
+        Sets attributes:
+            .filenamePrefix (str): Longest common prefix of provided tiffFilenames.
             .timeseries (np.ndarray): Assembled tiff stack.
             .masks (List[np.ndarray]): List of boolean masks for timeseries.
         """
         self._tiffFilenames = tiffFilenames
+        self.filenamePrefix = os.path.commonprefix(tiffFilenames)
         self.timeseries = self.open_TIFF_stack(tiffFilenames)
         self.masks = self._get_masks(maskFilenames)
 

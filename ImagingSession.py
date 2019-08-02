@@ -20,6 +20,8 @@ class ImagingSession:
             (default: {False})
 
     Attributes:
+        conditions {List[str]} -- The conditions used in this session.
+        trialGroups {Dict[str, List[int]]} -- Mapping from condition to trials.
         preWindowSize {int} -- Size of pre-timelock averaging window in milliseconds.
             (default: {500})
         postWindowSize {int} -- Size of post-timelock averaging window in milliseconds.
@@ -62,14 +64,16 @@ class ImagingSession:
         self.postWindowSize = (
             self.postWindowSize if postWindowSize is None else postWindowSize
         )
+        self.frameTimestamps = frameTimestamps
+        self.h5Filename: str = h5Filename
         self.title = title
 
-        sessionData = processROI.get_trials_metadata(h5Filename)
+        self._sessionData = processROI.get_trials_metadata(h5Filename)
         odorCodeGenerator = iter("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
         self.odorCodesToNames: Dict[str, str] = {}
         self.odorNamesToCodes: Dict[str, str] = {}
         trialGroups: Dict[str, List[int]] = {}
-        for i_trial, trial in sessionData.iterrows():
+        for i_trial, trial in self._sessionData.iterrows():
             stimuli = []
             odors = [trial["olfas:olfa_0:odor"], trial["olfas:olfa_1:odor"]]
             for i_odor, odor in enumerate(odors):
@@ -93,6 +97,10 @@ class ImagingSession:
         self.trialGroups = trialGroups
         self._set_timestamps(trialAlignmentTimes)
         self._set_frameWindows(frameTimestamps)
+
+    @property
+    def conditions(self):
+        return list(self.trialGroups.keys())
 
     @staticmethod
     def standardize_condition_text(stimuli: Sequence[Tuple[float, str]]) -> str:
