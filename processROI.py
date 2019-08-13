@@ -55,8 +55,11 @@ def get_flatten_trial_data(h5Filename, key, clean=False):
     with h5py.File(h5Filename, "r") as h5File:
         # Assumes h5File contains Trial000# keys and one Trials key
         numTrials = len(h5File)
+        for validFrameTriggers in range(1, numTrials):
+            if len(h5File["Trial{:04d}".format(validFrameTriggers)][key]):
+                break
         keyData = np.empty(
-            0, dtype=h5File["Trial{:04d}".format(numTrials - 1)][key][0].dtype
+            0, dtype=h5File["Trial{:04d}".format(validFrameTriggers)][key][0].dtype
         )
         for i_trial in range(1, numTrials):
             trial = h5File["Trial{:04d}".format(i_trial)]
