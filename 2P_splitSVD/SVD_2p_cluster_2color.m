@@ -78,7 +78,7 @@ svals=svals(1:num_svals_2nd);
 
 %save variables in current directory
 save(strcat(name3,'_svd.mat'),'U','SV','svals')
-
+createSpatialTiffStack(strcat(name3,'_svd.mat'))
 end
 % 
 % function [frametrigger]=getFrametrigger(h5)
