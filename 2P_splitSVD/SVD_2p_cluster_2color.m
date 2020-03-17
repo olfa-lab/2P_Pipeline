@@ -7,7 +7,8 @@ function []=SVD_2p_cluster_2color(name)
 % name='C:\Users\hnaka\Dropbox\MATLAB\2P\2P_data\aligned\JG1221_190516_field2_stim_00001_00001.tif'
 
 [filepath,name2,ext] = fileparts(name) ;
-name3=erase(name2,'_00001_00001');
+tmp = strsplit(name2, '_');
+name3 = strjoin(tmp(1:end-2),'_'); %remove _0000x_00001
 cd(filepath)
     Names = dir(['*.tif']);
     Names={Names.name}';

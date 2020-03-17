@@ -5,7 +5,8 @@ function []=SVD_2p_cluster(name)
 % name='C:\Users\hnaka\Dropbox\MATLAB\2P\2P_data\aligned\JG1221_190516_field2_stim_00001_00001.tif'
 
 [filepath,name2,ext] = fileparts(name) ;
-name3=erase(name2,'_00001_00001');
+tmp = strsplit(name2, '_');
+name3 = strjoin(tmp(1:end-2),'_'); %remove _0000x_00001
 
 sprintf('name=%s',name)
 sprintf('filepath=%s',filepath)
@@ -41,7 +42,7 @@ for s=1:length(sess_used)
         j=str2num(Names{i}(end-5:end-4));%remove .tif from names
         fprintf('Processing session %d, stack %d\n',sess,j)
         Y = tiff_reader(Names{i});
-        
+        num_frames{sess}(j) = size(Y,3);
         % ft_sub=frametrigger(framesInStack(i):framesInStack(i+1)-1);
         % trial_info.inh_onset=inh_onset(inh_onset>=ft_sub(1)&inh_onset<=ft_sub(end));
         [Usub,~,Ssub]=splitSVD_2p(Y,num_svals_1st);
@@ -83,7 +84,7 @@ svals=svals(1:num_svals_2nd);
 
 
 %save variables in current directory
-save(strcat(name3,'_svd.mat'),'U','SV','svals')
+save(strcat(name3,'_svd.mat'),'U','SV','svals','num_frames')
 createSpatialTiffStack(strcat(name3,'_svd.mat'))
 
 end
